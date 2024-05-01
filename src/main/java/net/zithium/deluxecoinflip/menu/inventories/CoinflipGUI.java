@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -34,6 +35,7 @@ public class CoinflipGUI implements Listener {
     private final boolean taxEnabled;
     private final double taxRate;
     private final long minimumBroadcastWinnings;
+    private final boolean commandsEnabled;
     private static final int ANIMATION_COUNT_THRESHOLD = 12;
 
     public CoinflipGUI(@NotNull DeluxeCoinflipPlugin plugin) {
@@ -46,6 +48,7 @@ public class CoinflipGUI implements Listener {
         this.taxEnabled = config.getBoolean("settings.tax.enabled");
         this.taxRate = config.getDouble("settings.tax.rate");
         this.minimumBroadcastWinnings = config.getLong("settings.minimum-broadcast-winnings");
+        this.commandsEnabled = config.getBoolean("settings.commands.enabled");
     }
 
     public void startGame(@NotNull Player player, @NotNull OfflinePlayer otherPlayer, CoinflipGame game) {
@@ -133,6 +136,8 @@ public class CoinflipGUI implements Listener {
                     // Broadcast to the server
                     broadcastWinningMessage(winAmount, taxed, winner.getName(), loser.getName(), economyManager.getEconomyProvider(game.getProvider()).getDisplayName());
 
+                    winningCommands(winner.getName(), loser.getName());
+
                     //closeAnimationGUI(gui);
 
                     cancel();
@@ -211,6 +216,18 @@ public class CoinflipGUI implements Listener {
                         ));
                     }
                 });
+            }
+        }
+    }
+
+    private void winningCommands(String winner, String loser) {
+        if (commandsEnabled) {
+            List<String> commands = config.getStringList("settings.commands.commands");
+            for (String command : commands) {
+                command = command.replace("{WINNER}", winner);
+                command = command.replace("{LOSER}", loser);
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                break;
             }
         }
     }

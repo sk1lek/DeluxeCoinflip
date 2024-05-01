@@ -35,6 +35,14 @@ settings:
     enabled: true
     rate: 5.0 # 5% tax
 
+  # Commands
+  # Placeholders: {WINNER}, {LOSER}
+  commands:
+    enabled: false
+    commands:
+      - msg {WINNER} You won!
+      - msg {LOSER} You Lose...
+
   # Economy providers
   #   If you are using custom provider (from our API),
   #   ensure to add the section with the provider identifier
